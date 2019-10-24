@@ -108,11 +108,12 @@ function nlocate (){
 
 function help_menu () {
 	echo ""
-	echo "Version: $version"
-	echo "Created by fede947  https://github.com/fede947/showmap"
+	echo " Showmap parse the xml files obtained with Nmap generates a summary and more."
+	echo
+	echo "	Developed by fede947
+	https://github.com/fede947/showmap
+	Version: $version"
 	echo ""
-	echo " Showmap parse the xml files obtained with Nmap and generates a summary."
-	echo "$version"
 
 	echo ""
 	echo " Options:"
