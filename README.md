@@ -1,4 +1,6 @@
-# showmap
+# Showmap
+
+## Help menu
 
 	Showmap parse the xml files obtained with Nmap generates a summary and more.
 
