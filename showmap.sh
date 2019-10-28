@@ -4,6 +4,11 @@
 version="1.1"
 
 
+## To Do
+# validador de parametros
+#
+
+
 ## xml de entrada
 xml_input="${!#}"
 xml_tmp="preparse.xml"
@@ -29,19 +34,21 @@ function check_xml (){
 			exit
 		fi
 	else
+		echo ""
 		echo "This file does not exist"
+		echo ""
 		exit 
 	fi
 }
 
 
 function banner (){
-	echo  " __ _                                         "
-	echo  "/ _\ |__   _____      ___ __ ___   __ _ _ __  "
-	echo  "\ \| '_ \ / _ \ \ /\ / / '_ \` _ \ / _\` | '_ \ "
-	echo  "_\ \ | | | (_) \ V  V /| | | | | | (_| | |_) |"
-	echo  "\__/_| |_|\___/ \_/\_/ |_| |_| |_|\__,_| .__/ "
-	echo  "                                       |_|    "
+	echo  "   __ _                                         "
+	echo  "  / _\ |__   _____      ___ __ ___   __ _ _ __  "
+	echo  "  \ \| '_ \ / _ \ \ /\ / / '_ \` _ \ / _\` | '_ \ "
+	echo  "  _\ \ | | | (_) \ V  V /| | | | | | (_| | |_) |"
+	echo  "  \__/_| |_|\___/ \_/\_/ |_| |_| |_|\__,_| .__/ "
+	echo  "                                         |_|    "
 
 }
 
@@ -92,6 +99,27 @@ function print_vuln (){
 	echo ""
 	awk 'BEGIN {printf "  %-16s%-12s%-30s%-22s\n  %-16s%-12s%-30s%-22s\n", "Host","Port/Proto","Script","Output", "====","==========","======","======","======="}' 
 	awk	'BEGIN{FS = ";"} NR>1 {printf "  %-15s%-12s%-30s%-22s\n", $1,$2,$3,$5}' $vuln_csv_tmp | grep -i "vulnerable"
+	echo ""
+	cleanup
+}
+
+
+function print_ip (){
+	check_xml
+	make_host_csv
+	echo ""
+	grep open $host_csv_tmp | awk 'BEGIN {printf "  %-13s%-16s\n  %-13s%-16s\n", "Host","Port/Proto", "====","========="} 
+		{FS = ";"} NR>1 {printf "  %-13s%-16s\n", $1,"("$4"/"$5")"}' 
+	echo ""
+	cleanup
+}
+
+
+function print_link (){
+	check_xml
+	make_host_csv
+	echo ""
+	grep "open.*http" prueba.csv | awk 'BEGIN {printf "  %-13s\n  %-13s\n", "Url", "==="} {FS = ";"} NR>1 {printf "  %-13s\n", "http://"$1":"$4}' 
 	echo ""
 	cleanup
 }
@@ -153,7 +181,7 @@ function nlocate (){
 function help_menu () {
 	banner
 	echo ""
-	echo " Showmap parse the xml files obtained with Nmap generates a summary and more."
+	echo "  Showmap parse the xml files obtained with Nmap generates a summary and more."
 	echo
 	echo "	Developed by fede947
 	https://github.com/fede947/showmap
@@ -161,16 +189,18 @@ function help_menu () {
 	echo ""
 
 	echo ""
-	echo " Options:"
+	echo "  Options:"
 	echo "	-host	Print host summary. By default."
 	echo "	-vuln	Print vuln summary."
+	echo "	-ip	Print ip/port list"
+	echo "	-u	Print http url list"
 	echo "	-csv	Create a csv file"
 	echo "	-S	Print services using filters."
 	echo "	-help	Show this help menu."
 	echo "	-nse	Search NSE script for Nmap"	
 
 	echo ""
-	echo " Usage:"
+	echo "  Usage:"
 	echo "	showmap  nmap.xml"
 	echo "	showmap -host nmap.xml"
 	echo "	showmap -S http	nmap.xml"
@@ -192,6 +222,12 @@ function switch_selector (){
 				shift
 				;;
 			-vuln) print_vuln
+				shift
+				;;
+			-ip) print_ip
+				shift
+				;;
+			-u) print_link
 				shift
 				;;
 			-csv)
@@ -219,6 +255,11 @@ function switch_selector (){
 
 param_1="$1"
 param_2="$2"
+
+if [ -z "$param_1" ]; then
+	help_menu
+	exit
+fi
 
 if [ -z "$param_2" ] && [ "$param_1" != "-h" ] && [ "$param_1" != "--help" ]; then
 	param="$param_1"
