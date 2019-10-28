@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 version="1.0"
 
 
@@ -8,6 +9,41 @@ xml_input="${!#}"
 xml_tmp="preparse.xml"
 host_csv_tmp="port_temp.csv"
 vuln_csv_tmp="vuln_temp.csv"
+
+
+function check_xml (){
+	if [ -e "$xml_input" ]; then
+		check_ext=$(echo $xml_input | grep -o .xml)
+		if [ "$check_ext" == ".xml" ]; then
+			check_file=$(awk 'NR<3 {print }' $xml_input | grep -o nmaprun)
+			if [ "$check_file" != "nmaprun" ]; then
+				echo ""
+				echo "  This is not an XML file created with Nmap"
+				echo ""
+				exit
+			fi
+		else
+			echo ""
+			echo "  This is not an XML file"
+			echo ""
+			exit
+		fi
+	else
+		echo "This file does not exist"
+		exit 
+	fi
+}
+
+
+function banner (){
+	echo  " __ _                                         "
+	echo  "/ _\ |__   _____      ___ __ ___   __ _ _ __  "
+	echo  "\ \| '_ \ / _ \ \ /\ / / '_ \` _ \ / _\` | '_ \ "
+	echo  "_\ \ | | | (_) \ V  V /| | | | | | (_| | |_) |"
+	echo  "\__/_| |_|\___/ \_/\_/ |_| |_| |_|\__,_| .__/ "
+	echo  "                                       |_|    "
+
+}
 
 
 ## Quito los saltos de linea de todos los atributos output del xml
@@ -41,6 +77,7 @@ function make_vuln_csv () {
 ## Funciones de los switches
 
 function print_host (){
+	check_xml
 	make_host_csv
 	echo ""
 	awk 'BEGIN {printf "  %-15s%-8s%-8s%-8s%-15s%-8s\n  %-15s%-8s%-8s%-8s%-15s%-8s\n", "Host","Port","Proto","State","Service","Version", "====","====","=====","=====","=======","======="} 
@@ -50,6 +87,7 @@ function print_host (){
 
 
 function print_vuln (){
+	check_xml
 	make_vuln_csv
 	echo ""
 	awk 'BEGIN {printf "  %-16s%-12s%-30s%-22s\n  %-16s%-12s%-30s%-22s\n", "Host","Port/Proto","Script","Output", "====","==========","======","======","======="}' 
@@ -60,18 +98,20 @@ function print_vuln (){
 
 
 function search (){
+	check_xml
 	printf "\n  %-15s%-8s%-8s%-8s%-15s%-8s\n" "Host" "Port" "Proto" "State" "Service" "Version"
 	printf "  %-15s%-8s%-8s%-8s%-15s%-8s\n" "====" "====" "=====" "=====" "=======" "=======" 
-	print_host | grep $param
+	print_host | grep $param_2
 	echo ""
 }
 
 
 function make_csv (){
+	check_xml
 	make_host_csv
-	mv $host_csv_tmp "$param""(host-table)".csv
+	mv $host_csv_tmp "$param_2(host-table)".csv
 	make_vuln_csv
-	mv $vuln_csv_tmp "$param""(vuln-table)".csv
+	mv $vuln_csv_tmp "$param_2(vuln-table)".csv
 	echo ""
 	echo "  [+] CSV file succesfuly created."
 	echo ""
@@ -82,8 +122,12 @@ function nlocate (){
 ## Developed by LucasGaleano and Macle0d part of the RTT project
 ## https://github.com/Macle0d/rtt/
 
-	echo ""
+	if [ -z "$param" ]; then
+		param="$param_2"
+	fi
+
 	n=$(locate .nse | grep nmap |  grep "\b$param" | awk -F "/" '{print $NF}' | cut -d '.' -f 1 | nl)
+
 	if [ -z "$param" ]; then
 		echo -e '  [-] \e[36mscript not found \e[31m(╯`o`)╯\e[39m︵ ┻━┻'
 		echo -e "
@@ -107,6 +151,7 @@ function nlocate (){
 
 
 function help_menu () {
+	banner
 	echo ""
 	echo " Showmap parse the xml files obtained with Nmap generates a summary and more."
 	echo
@@ -134,48 +179,51 @@ function help_menu () {
 }
 
 
+function switch_selector (){
+	while [ -n "$1" ]; do
+			case "$1" in
+			--help) help_menu ;;
+			-h) help_menu ;;
+			-S) 
+				search "$param_1" "$param_2"
+				shift
+				;;
+			-host) print_host
+				shift
+				;;
+			-vuln) print_vuln
+				shift
+				;;
+			-csv)
+				make_csv "$param_1" "$param_2"
+				shift
+				;;
+			-nse) 
+				nlocate "$param_2"
+				shift
+				;;
+			-all)
+				shift
+				;;
+			--)
+				shift
+				break
+				;;
+			esac
+			shift
+		done
+}
+
+
 ## MAIN ##
 
-# switches
-if [ -n "$1" ]; then # If first parameter passed then print Hi	
-    while [ -n "$1" ]; do
-		case "$1" in
-		--help) help_menu ;;
-		-h) help_menu ;;
-		-S) 
-			param="$2"
-			search
-			shift
-			;;
-		-host) print_host
-			shift
-			;;
-		-vuln) print_vuln
-			shift
-			;;
-		-csv)
-			param="$2" 
-			make_csv
-			shift
-			;;
-		-nse) 
-			param="$2"
-			nlocate
-			shift
-			;;
-		-all)
-			shift
-			;;
-		--)
-			shift
-			break
-			;;
-		esac
-		shift
-	done
+param_1="$1"
+param_2="$2"
+
+if [ -z "$param_2" ] && [ "$param_1" != "-h" ] && [ "$param_1" != "--help" ]; then
+	param="$param_1"
+	nlocate "$param"
 else
-	help_menu
+	switch_selector "$param_1" "$param_2"
 fi
-
-
 
