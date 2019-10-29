@@ -18,21 +18,18 @@ function check_xml (){
 			check_file=$(awk 'NR<3 {print }' $xml_input | grep -o nmaprun)
 			if [ "$check_file" != "nmaprun" ]; then
 				echo ""
-				banner
 				echo -e "\033[1m \e[31m  [-]\e[39m  This is not an XML file created with Nmap"
 				echo ""
 				exit
 			fi
 		else
 			echo ""
-			banner
 			echo -e "\033[1m \e[31m  [-]\e[39m  This is not an XML file"
 			echo ""
 			exit
 		fi
 	else
 		echo ""
-		banner
 		echo -e "\033[1m \e[31m  [-]\e[39m This file does not exist"
 		echo ""
 		exit 
@@ -83,7 +80,6 @@ function make_vuln_csv () {
 function print_host (){
 	check_xml
 	make_host_csv
-	echo ""
 	awk 'BEGIN {printf "  %-15s%-8s%-8s%-8s%-15s%-8s\n  %-15s%-8s%-8s%-8s%-15s%-8s\n", "Host","Port","Proto","State","Service","Version", "====","====","=====","=====","=======","======="} 
 		{FS = ";"} NR>1 {printf "  %-15s%-8s%-8s%-8s%-15s%-8s\n", $1,$4,$5,$6,$7,$8}' $host_csv_tmp
 	cleanup
@@ -93,7 +89,6 @@ function print_host (){
 function print_vuln (){
 	check_xml
 	make_vuln_csv
-	echo ""
 	awk 'BEGIN {printf "  %-16s%-12s%-30s%-22s\n  %-16s%-12s%-30s%-22s\n", "Host","Port/Proto","Script","Output", "====","==========","======","======","======="}' 
 	awk	'BEGIN{FS = ";"} NR>1 {printf "  %-15s%-12s%-30s%-22s\n", $1,$2,$3,$5}' $vuln_csv_tmp | grep -i "vulnerable"
 	echo ""
@@ -104,7 +99,6 @@ function print_vuln (){
 function print_ip (){
 	check_xml
 	make_host_csv
-	echo ""
 	grep open $host_csv_tmp | awk 'BEGIN {printf "  %-13s%-16s\n  %-13s%-16s\n", "Host","Port/Proto", "====","========="} 
 		{FS = ";"} NR>1 {printf "  %-13s%-16s\n", $1,"("$4"/"$5")"}' 
 	echo ""
@@ -115,7 +109,6 @@ function print_ip (){
 function print_link (){
 	check_xml
 	make_host_csv
-	echo ""
 	grep "open.*http" $host_csv_tmp | awk 'BEGIN {printf "  %-13s\n  %-13s\n", "Url", "==="} {FS = ";"} NR>1 {printf "  %-13s\n", "http://"$1":"$4}' 
 	echo ""
 	cleanup
@@ -126,7 +119,7 @@ function search (){
 	check_xml
 	printf "\n  %-15s%-8s%-8s%-8s%-15s%-8s\n" "Host" "Port" "Proto" "State" "Service" "Version"
 	printf "  %-15s%-8s%-8s%-8s%-15s%-8s\n" "====" "====" "=====" "=====" "=======" "=======" 
-	print_host | grep $param_2
+	print_host | grep -i $param_2
 	echo ""
 }
 
@@ -137,7 +130,6 @@ function make_csv (){
 	mv $host_csv_tmp "$param_2(host-table)".csv
 	make_vuln_csv
 	mv $vuln_csv_tmp "$param_2(vuln-table)".csv
-	echo ""
 	echo -e "\033[1m \e[32m  [+]\e[39m CSV file succesfuly created.\e[0m"
 	echo ""
 	cleanup
@@ -155,7 +147,6 @@ function nlocate (){
 	n=$(locate .nse | grep nmap |  grep "\b$param" | awk -F "/" '{print $NF}' | cut -d '.' -f 1 | nl)
 
 	if [ -z "$param" ]; then
-		echo ""
 		echo -e '\033[1m \e[31m  [-] \e[39mSuper invalid option \e[31m(╯`o`)╯\e[39m︵ ┻━┻'
 		echo -e "
 		＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
@@ -169,10 +160,8 @@ function nlocate (){
 		￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣
 		"
 	elif [ -z "$n" ]; then
-		echo ""
 		echo -e '\033[1m \e[31m  [-] \e[39mscript not found \e[31m(╯`o`)╯\e[39m︵ ┻━┻'
 	else 
-		echo ""
 		echo "$n"
 	fi
 	echo ""
@@ -195,13 +184,13 @@ function help_menu () {
 	-u	Print http url list
 	-csv	Create a csv file
 	-S	Print services using filters.
-	-help	Show this help menu.
 	-nse	Search NSE script for Nmap
+	-help	Show this help menu.
 
   Usage:
-	showmap -host nmap.xml
-	showmap -S http	nmap.xml
-	showmap -csv path/file nmap.xml
+	showmap -host report.xml
+	showmap -S <filter>	report.xml
+	showmap -csv <path/file> report.xml
 	showmap -nse smb
 	\e[0m"
 }
@@ -213,26 +202,37 @@ function switch_selector (){
 			--help) help_menu ;;
 			-h) help_menu ;;
 			-S) 
+				banner
 				search "$param_1" "$param_2"
 				shift
 				;;
-			-host) print_host
+			-host)
+				banner
+				print_host
 				shift
 				;;
-			-vuln) print_vuln
+			-vuln)
+				banner
+				print_vuln
 				shift
 				;;
-			-ip) print_ip
+			-ip) 
+				banner
+				print_ip
 				shift
 				;;
-			-u) print_link
+			-u) 
+				banner
+				print_link
 				shift
 				;;
 			-csv)
+				banner
 				make_csv "$param_1" "$param_2"
 				shift
 				;;
-			-nse) 
+			-nse)
+				banner
 				nlocate "$param_2"
 				shift
 				;;
@@ -261,6 +261,7 @@ fi
 
 if [ -z "$param_2" ] && [[ "$param_1" != *-* ]]; then
 	param="$param_1"
+	banner
 	nlocate "$param"
 else
 	switch_selector "$param_1" "$param_2"
