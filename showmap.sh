@@ -43,12 +43,19 @@ function check_xml (){
 
 
 function banner (){
-	echo  "   __ _                                         "
-	echo  "  / _\ |__   _____      ___ __ ___   __ _ _ __  "
-	echo  "  \ \| '_ \ / _ \ \ /\ / / '_ \` _ \ / _\` | '_ \ "
-	echo  "  _\ \ | | | (_) \ V  V /| | | | | | (_| | |_) |"
-	echo  "  \__/_| |_|\___/ \_/\_/ |_| |_| |_|\__,_| .__/ "
-	echo  "                                         |_|    "
+	echo "   __ _                                         "
+	echo "  / _\ |__   _____      ___ __ ___   __ _ _ __  "
+	echo "  \ \| '_ \ / _ \ \ /\ / / '_ \` _ \ / _\` | '_ \ "
+	echo "  _\ \ | | | (_) \ V  V /| | | | | | (_| | |_) |"
+	echo "  \__/_| |_|\___/ \_/\_/ |_| |_| |_|\__,_| .__/ "
+	echo "                                         |_|    "
+	echo ""
+	echo "  Showmap parse the xml files obtained with Nmap generates a summary and more."
+	echo
+	echo "	Developed by fede947
+	https://github.com/fede947/showmap
+	Version: $version"
+	echo ""
 
 }
 
@@ -119,7 +126,7 @@ function print_link (){
 	check_xml
 	make_host_csv
 	echo ""
-	grep "open.*http" prueba.csv | awk 'BEGIN {printf "  %-13s\n  %-13s\n", "Url", "==="} {FS = ";"} NR>1 {printf "  %-13s\n", "http://"$1":"$4}' 
+	grep "open.*http" $host_csv_tmp | awk 'BEGIN {printf "  %-13s\n  %-13s\n", "Url", "==="} {FS = ";"} NR>1 {printf "  %-13s\n", "http://"$1":"$4}' 
 	echo ""
 	cleanup
 }
@@ -157,6 +164,7 @@ function nlocate (){
 	n=$(locate .nse | grep nmap |  grep "\b$param" | awk -F "/" '{print $NF}' | cut -d '.' -f 1 | nl)
 
 	if [ -z "$param" ]; then
+		echo ""
 		echo -e '  [-] \e[36mscript not found \e[31m(╯`o`)╯\e[39m︵ ┻━┻'
 		echo -e "
 		＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
@@ -170,8 +178,10 @@ function nlocate (){
 		￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣
 		"
 	elif [ -z "$n" ]; then
+		echo ""
 		echo -e '  [-] \e[36mscript not found \e[31m(╯`o`)╯\e[39m︵ ┻━┻'
 	else 
+		echo ""
 		echo "$n"
 	fi
 	echo ""
@@ -180,14 +190,6 @@ function nlocate (){
 
 function help_menu () {
 	banner
-	echo ""
-	echo "  Showmap parse the xml files obtained with Nmap generates a summary and more."
-	echo
-	echo "	Developed by fede947
-	https://github.com/fede947/showmap
-	Version: $version"
-	echo ""
-
 	echo ""
 	echo "  Options:"
 	echo "	-host	Print host summary. By default."
@@ -198,7 +200,6 @@ function help_menu () {
 	echo "	-S	Print services using filters."
 	echo "	-help	Show this help menu."
 	echo "	-nse	Search NSE script for Nmap"	
-
 	echo ""
 	echo "  Usage:"
 	echo "	showmap  nmap.xml"
@@ -238,9 +239,6 @@ function switch_selector (){
 				nlocate "$param_2"
 				shift
 				;;
-			-all)
-				shift
-				;;
 			--)
 				shift
 				break
@@ -261,7 +259,7 @@ if [ -z "$param_1" ]; then
 	exit
 fi
 
-if [ -z "$param_2" ] && [ "$param_1" != "-h" ] && [ "$param_1" != "--help" ]; then
+if [ -z "$param_2" ] && [[ "$param_1" != *-* ]]; then
 	param="$param_1"
 	nlocate "$param"
 else
