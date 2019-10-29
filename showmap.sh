@@ -1,12 +1,7 @@
 #!/bin/bash
 
 
-version="1.1"
-
-
-## To Do
-# validador de parametros
-#
+version="1.2"
 
 
 ## xml de entrada
@@ -202,10 +197,10 @@ function help_menu () {
 	echo "	-nse	Search NSE script for Nmap"	
 	echo ""
 	echo "  Usage:"
-	echo "	showmap  nmap.xml"
 	echo "	showmap -host nmap.xml"
 	echo "	showmap -S http	nmap.xml"
 	echo "	showmap -csv path/file nmap.xml"
+	echo "	showmap -nse smb"
 	echo ""
 }
 
@@ -239,7 +234,10 @@ function switch_selector (){
 				nlocate "$param_2"
 				shift
 				;;
-			--)
+			-*)
+				echo ""
+				echo -e '  [-] \e[36mSuper invalid option \e[31m(╯`o`)╯\e[39m︵ ┻━┻'
+				echo ""
 				shift
 				break
 				;;
