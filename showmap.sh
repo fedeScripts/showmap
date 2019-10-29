@@ -18,19 +18,22 @@ function check_xml (){
 			check_file=$(awk 'NR<3 {print }' $xml_input | grep -o nmaprun)
 			if [ "$check_file" != "nmaprun" ]; then
 				echo ""
-				echo "  This is not an XML file created with Nmap"
+				banner
+				echo -e "\033[1m \e[31m  [-]\e[39m  This is not an XML file created with Nmap"
 				echo ""
 				exit
 			fi
 		else
 			echo ""
-			echo "  This is not an XML file"
+			banner
+			echo -e "\033[1m \e[31m  [-]\e[39m  This is not an XML file"
 			echo ""
 			exit
 		fi
 	else
 		echo ""
-		echo "This file does not exist"
+		banner
+		echo -e "\033[1m \e[31m  [-]\e[39m This file does not exist"
 		echo ""
 		exit 
 	fi
@@ -38,20 +41,12 @@ function check_xml (){
 
 
 function banner (){
-	echo "   __ _                                         "
-	echo "  / _\ |__   _____      ___ __ ___   __ _ _ __  "
-	echo "  \ \| '_ \ / _ \ \ /\ / / '_ \` _ \ / _\` | '_ \ "
-	echo "  _\ \ | | | (_) \ V  V /| | | | | | (_| | |_) |"
-	echo "  \__/_| |_|\___/ \_/\_/ |_| |_| |_|\__,_| .__/ "
-	echo "                                         |_|    "
-	echo ""
-	echo "  Showmap parse the xml files obtained with Nmap generates a summary and more."
-	echo
-	echo "	Developed by fede947
-	https://github.com/fede947/showmap
-	Version: $version"
-	echo ""
-
+	echo -e " \033[1m\e[31m
+	 __..                      
+	(__ |_  _ .    .._ _  _.._ 
+	.__)| )(_) \/\/ | | )(_][_)
+	                        |  
+	\e[0m"
 }
 
 
@@ -143,8 +138,9 @@ function make_csv (){
 	make_vuln_csv
 	mv $vuln_csv_tmp "$param_2(vuln-table)".csv
 	echo ""
-	echo "  [+] CSV file succesfuly created."
+	echo -e "\033[1m \e[32m  [+]\e[39m CSV file succesfuly created.\e[0m"
 	echo ""
+	cleanup
 }
 
 
@@ -160,7 +156,7 @@ function nlocate (){
 
 	if [ -z "$param" ]; then
 		echo ""
-		echo -e '  [-] \e[36mscript not found \e[31m(╯`o`)╯\e[39m︵ ┻━┻'
+		echo -e '\033[1m \e[31m  [-] \e[39mSuper invalid option \e[31m(╯`o`)╯\e[39m︵ ┻━┻'
 		echo -e "
 		＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 		|\e[107m　\e[1m\e[31mdetected error　　　　　　　　　　　   　\e[0m\e[107m\e[30m[－][口][×]\e[49m\e[39m|
@@ -174,7 +170,7 @@ function nlocate (){
 		"
 	elif [ -z "$n" ]; then
 		echo ""
-		echo -e '  [-] \e[36mscript not found \e[31m(╯`o`)╯\e[39m︵ ┻━┻'
+		echo -e '\033[1m \e[31m  [-] \e[39mscript not found \e[31m(╯`o`)╯\e[39m︵ ┻━┻'
 	else 
 		echo ""
 		echo "$n"
@@ -185,23 +181,29 @@ function nlocate (){
 
 function help_menu () {
 	banner
+	echo -e "\e[1m  Showmap parse the xml files obtained with Nmap generates a summary and more.
+
+	Developed by fede947
+	https://github.com/fede947/showmap
+	Version: \e[5m$version\e[0m"
 	echo ""
-	echo "  Options:"
-	echo "	-host	Print host summary. By default."
-	echo "	-vuln	Print vuln summary."
-	echo "	-ip	Print ip/port list"
-	echo "	-u	Print http url list"
-	echo "	-csv	Create a csv file"
-	echo "	-S	Print services using filters."
-	echo "	-help	Show this help menu."
-	echo "	-nse	Search NSE script for Nmap"	
-	echo ""
-	echo "  Usage:"
-	echo "	showmap -host nmap.xml"
-	echo "	showmap -S http	nmap.xml"
-	echo "	showmap -csv path/file nmap.xml"
-	echo "	showmap -nse smb"
-	echo ""
+	echo -e "\e[1m
+  Options:
+	-host	Print host summary. By default.
+	-vuln	Print vuln summary.
+	-ip	Print ip/port list
+	-u	Print http url list
+	-csv	Create a csv file
+	-S	Print services using filters.
+	-help	Show this help menu.
+	-nse	Search NSE script for Nmap
+
+  Usage:
+	showmap -host nmap.xml
+	showmap -S http	nmap.xml
+	showmap -csv path/file nmap.xml
+	showmap -nse smb
+	\e[0m"
 }
 
 
@@ -236,7 +238,7 @@ function switch_selector (){
 				;;
 			-*)
 				echo ""
-				echo -e '  [-] \e[36mSuper invalid option \e[31m(╯`o`)╯\e[39m︵ ┻━┻'
+				echo -e '\033[1m \e[31m  [-] \e[39mSuper invalid option \e[31m(╯`o`)╯\e[39m︵ ┻━┻'
 				echo ""
 				shift
 				break
