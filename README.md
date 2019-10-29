@@ -2,7 +2,8 @@
 
 ### Install
 
-Run	./install.sh
+Run
+	./install.sh
 
 ### Help menu
 
