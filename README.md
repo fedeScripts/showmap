@@ -1,10 +1,10 @@
 # Showmap
 
 ### Install
-
 Run
-	./install.sh
 
+	./install.sh
+	
 ### Help menu
 
 		 __..                      
