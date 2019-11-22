@@ -42,8 +42,10 @@ function banner (){
 	 __..                      
 	(__ |_  _ .    .._ _  _.._ 
 	.__)| )(_) \/\/ | | )(_][_)
-	                        |  
-	\e[0m"
+	                        |   \e[0m"
+	echo -e "\e[1m	Developed by fede947
+	https://github.com/fede947/showmap
+	Version: \e[5m$version\e[0m"
 }
 
 
@@ -170,13 +172,8 @@ function nlocate (){
 
 function help_menu () {
 	banner
-	echo -e "\e[1m  Showmap parse the xml files obtained with Nmap generates a summary and more.
-
-	Developed by fede947
-	https://github.com/fede947/showmap
-	Version: \e[5m$version\e[0m"
 	echo ""
-	echo -e "\e[1m
+	echo -e "\e[1m  Showmap parse the xml files obtained with Nmap generates a summary and more.
   Options:
 	-host	Print host summary. By default.
 	-vuln	Print vuln summary.
