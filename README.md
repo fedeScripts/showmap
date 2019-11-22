@@ -26,11 +26,12 @@ Run
 		-u	Print http url list
 		-csv	Create a csv file
 		-S	Print services using filters.
-		-help	Show this help menu.
 		-nse	Search NSE script for Nmap
+		-help	Show this help menu.
 	
 	  Usage:
-		showmap -host nmap.xml
-		showmap -S http	nmap.xml
-		showmap -csv path/file nmap.xml
+		showmap -host report.xml
+		showmap -S <filter>	report.xml
+		showmap -csv <path/file> report.xml
 		showmap -nse smb
+
