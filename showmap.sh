@@ -38,14 +38,13 @@ function check_xml (){
 
 
 function banner (){
-	echo -e " \033[1m\e[31m
-	 __..                      
+	echo -e " \033[1m\e[31m	 __..                      
 	(__ |_  _ .    .._ _  _.._ 
 	.__)| )(_) \/\/ | | )(_][_)
-	                        |   \e[0m"
+	                        |  \e[0m"
 	echo -e "\e[1m	Developed by fede947
 	https://github.com/fede947/showmap
-	Version: \e[5m$version\e[0m"
+	Version: \e[5m$version\e[0m\n"
 }
 
 
