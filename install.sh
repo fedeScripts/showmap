@@ -2,4 +2,4 @@
 
 sudo apt install xmlstarlet -y
 path=$(pwd)
-sudo ln -sf "$path"/showmap.sh /usr/bin/showmap
+sudo ln -sfv "$path"/showmap.sh /usr/bin/showmap
