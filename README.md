@@ -1,5 +1,8 @@
 # Showmap
 
+## Importante! 
+Esta herramienta fue migrada a python, revisa el nuevo proyecto en [Showmap.py](https://github.com/fedeScripts/showmap.py) 
+
 ### Install
 Run
 
